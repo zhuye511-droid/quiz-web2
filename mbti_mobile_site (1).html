@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI 16题人格测试</title>
+
+<style>
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+background:#f2f4f8;
+margin:0;
+padding:0;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+h1{
+text-align:center;
+margin-top:0;
+}
+
+.question{
+margin:22px 0;
+}
+
+.option{
+display:block;
+background:#f7f8fb;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+cursor:pointer;
+}
+
+.option:hover{
+background:#e8efff;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:10px;
+background:#4a6cf7;
+color:white;
+font-size:16px;
+margin-top:20px;
+cursor:pointer;
+}
+
+.progress{
+height:10px;
+background:#e6e8ef;
+border-radius:20px;
+margin-bottom:20px;
+overflow:hidden;
+}
+
+.bar{
+height:10px;
+background:#4a6cf7;
+width:0%;
+}
+
+.result{
+margin-top:25px;
+padding:20px;
+background:#eef2ff;
+border-radius:10px;
+display:none;
+}
+
+.type{
+font-size:28px;
+font-weight:bold;
+margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>MBTI 16题人格测试</h1>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+
+<form id="form"></form>
+
+<button onclick="calc()">查看测试结果</button>
+
+<div class="result" id="result">
+<div class="type" id="type"></div>
+<div id="desc"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+const questions=[
+["参加聚会时你通常","E 主动和很多人聊天","I 和熟悉的人待在一起"],
+["你更倾向于","S 关注现实细节","N 思考未来可能"],
+["做决策时","T 逻辑分析","F 个人感受"],
+["你更喜欢","J 提前规划","P 临时决定"],
+["周末更愿意","E 外出社交","I 在家休息"],
+["你更容易","S 记住事实","N 想出点子"],
+["评价别人看重","T 原则能力","F 情感关系"],
+["工作方式","J 按计划","P 灵活"],
+["社交场合","E 很快融入","I 慢慢适应"],
+["更相信","S 经验","N 直觉"],
+["冲突处理","T 讲道理","F 顾感受"],
+["生活方式","J 有序","P 随性"],
+["获取能量","E 人群","I 独处"],
+["关注点","S 现实","N 意义"],
+["做选择","T 客观","F 情感"],
+["计划变化","J 不适应","P 很快适应"]
+]
+
+let form=document.getElementById("form")
+
+questions.forEach((q,i)=>{
+
+let div=document.createElement("div")
+div.className="question"
+
+div.innerHTML=`
+<b>${i+1}. ${q[0]}</b>
+<label class="option"><input type="radio" name="q${i}" value="${q[1][0]}" onclick="progress()"> ${q[1]}</label>
+<label class="option"><input type="radio" name="q${i}" value="${q[2][0]}" onclick="progress()"> ${q[2]}</label>
+`
+
+form.appendChild(div)
+
+})
+
+function progress(){
+
+let total=questions.length
+let answered=0
+
+for(let i=0;i<total;i++){
+if(document.querySelector('input[name="q'+i+'"]:checked')) answered++
+}
+
+document.getElementById("bar").style.width=(answered/total*100)+"%"
+}
+
+const desc={
+INTJ:"战略型人格，擅长规划未来，独立而理性。",
+INTP:"思想型人格，喜欢探索理论和逻辑。",
+ENTJ:"天生领导者，善于组织与决策。",
+ENTP:"创意型人格，喜欢挑战新想法。",
+INFJ:"理想主义者，富有洞察力与使命感。",
+INFP:"调停者，价值驱动，富有想象力。",
+ENFJ:"鼓舞者，善于激励他人。",
+ENFP:"探索者，热情而富有创造力。",
+ISTJ:"务实执行者，可靠且有责任心。",
+ISFJ:"守护者，细心体贴。",
+ESTJ:"管理者，重视秩序与效率。",
+ESFJ:"支持者，重视人际关系。",
+ISTP:"实践者，冷静解决问题。",
+ISFP:"艺术家，追求自由与美。",
+ESTP:"行动派，喜欢冒险与体验。",
+ESFP:"表演者，热情乐观。"
+}
+
+function calc(){
+
+let score={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0}
+
+for(let i=0;i<questions.length;i++){
+
+let r=document.querySelector('input[name="q'+i+'"]:checked')
+
+if(!r){
+alert("请完成全部题目")
+return
+}
+
+score[r.value]++
+}
+
+let type=
+(score.E>score.I?"E":"I")+
+(score.S>score.N?"S":"N")+
+(score.T>score.F?"T":"F")+
+(score.J>score.P?"J":"P")
+
+document.getElementById("result").style.display="block"
+document.getElementById("type").innerText="你的MBTI类型："+type
+document.getElementById("desc").innerText=desc[type]
+
+window.scrollTo(0,document.body.scrollHeight)
+
+}
+
+</script>
+
+</body>
+</html>
